@@ -23,6 +23,7 @@ Built for the Rise In *Stellar Journey to Mastery* — Level 2 (Yellow Belt) cha
 | Contract ID | [`CBVQQHNB…56S6QC24`](https://stellar.expert/explorer/testnet/contract/CBVQQHNBJU3DAUUDL65VN7CGKYEETPMHW2HANPZJVGHYQMML56S6QC24) |
 | Source | [`contracts/yellow-counter/`](contracts/yellow-counter/) |
 | SDK | `soroban-sdk` 26 (built to `wasm32v1-none`) |
+| Verified call | [`3d8cf4c5…6edcb4c`](https://stellar.expert/explorer/testnet/tx/3d8cf4c589806566a47a6660e48430288296a413aa8cfab915350d93b6edcb4c): `increment(5)` returned `5` and emitted an `inc` event |
 
 ## Tech stack
 
