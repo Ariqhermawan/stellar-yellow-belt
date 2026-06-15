@@ -34,8 +34,14 @@ export async function accountExists(address: string): Promise<boolean> {
   try {
     await server.getAccount(address);
     return true;
-  } catch {
-    return false;
+  } catch (err) {
+    // Only treat a genuine "account not found" as unfunded. Rethrow transport/RPC
+    // errors so an outage does not mislead the user into the Friendbot flow.
+    const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
+    if (msg.includes("not found") || msg.includes("notfound") || msg.includes("404")) {
+      return false;
+    }
+    throw err;
   }
 }
 

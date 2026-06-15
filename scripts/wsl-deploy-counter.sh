@@ -10,7 +10,8 @@ set -euo pipefail
 if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env"; fi
 export PATH="$HOME/.cargo/bin:$PATH"
 
-SRC="/mnt/c/Users/Lenovo/OneDrive/Documents/Claude/Projects/stellar-yellow-belt/contracts/yellow-counter"
+# Source contract dir. Override with SRC=... or run from the repo root.
+SRC="${SRC:-$PWD/contracts/yellow-counter}"
 WORK="$HOME/yellow-counter-build"
 
 echo "== preparing build dir =="

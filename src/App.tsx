@@ -75,7 +75,13 @@ export default function App() {
     async (addr: string) => {
       setAddress(addr);
       setNetwork(await getWalletNetwork());
-      const exists = await accountExists(addr);
+      let exists: boolean | null = null;
+      try {
+        exists = await accountExists(addr);
+      } catch (err) {
+        // Transport/RPC error: leave funded state unknown rather than false.
+        console.error(err);
+      }
       setFunded(exists);
       if (exists) {
         await Promise.all([refreshCount(addr), refreshEvents()]);
@@ -145,6 +151,13 @@ export default function App() {
   const runWrite = async (label: string, fn: () => Promise<string>) => {
     setTx({ kind: "pending", msg: `${label}…` });
     try {
+      // Re-check the wallet network right before signing; it can change after connect.
+      const net = await getWalletNetwork();
+      setNetwork(net);
+      if (net !== "TESTNET") {
+        setTx({ kind: "error", msg: "Switch your wallet to Testnet before writing." });
+        return;
+      }
       const hash = await fn();
       setTx({ kind: "success", msg: `${label} confirmed.`, hash });
       if (address) await Promise.all([refreshCount(address), refreshEvents()]);
