@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Build + deploy the yellow-counter Soroban contract to Stellar testnet.
 # Builds in a WSL-native dir (not /mnt/c) to avoid OneDrive locks + slow IO.
-# Run from Windows via:
-#   MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u root -- bash -c 'sed "s/\r$//" /mnt/c/.../scripts/wsl-deploy-counter.sh | bash'
+# Run from the repo root. Override SRC=... or KEY=... when needed.
 set -euo pipefail
 
 # A piped (non-login) shell doesn't source ~/.cargo/env, so cargo/rustup are
@@ -10,8 +9,9 @@ set -euo pipefail
 if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env"; fi
 export PATH="$HOME/.cargo/bin:$PATH"
 
-SRC="/mnt/c/Users/Lenovo/OneDrive/Documents/Claude/Projects/stellar-yellow-belt/contracts/yellow-counter"
+SRC="${SRC:-$PWD/contracts/yellow-counter}"
 WORK="$HOME/yellow-counter-build"
+KEY="${KEY:-yellow-counter-admin}"
 
 echo "== preparing build dir =="
 rm -rf "$WORK"
@@ -32,16 +32,16 @@ fi
 ls -la "$WASM"
 
 echo "== deployer key =="
-if ! stellar keys address ybcounter >/dev/null 2>&1; then
-  stellar keys generate ybcounter --network testnet --fund >/dev/null 2>&1 || true
+if ! stellar keys address "$KEY" >/dev/null 2>&1; then
+  stellar keys generate "$KEY" --network testnet --fund >/dev/null 2>&1 || true
 fi
-stellar keys fund ybcounter --network testnet >/dev/null 2>&1 || true
-echo "DEPLOYER=$(stellar keys address ybcounter)"
+stellar keys fund "$KEY" --network testnet >/dev/null 2>&1 || true
+echo "DEPLOYER=$(stellar keys address "$KEY")"
 
 echo "== deploying to testnet =="
 CID=$(stellar contract deploy \
   --wasm "$WASM" \
-  --source-account ybcounter \
+  --source-account "$KEY" \
   --network testnet 2>/dev/null | grep -oE 'C[A-Z2-7]{55}' | head -1)
 
 if [ -z "$CID" ]; then

@@ -7,12 +7,17 @@ if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env"; fi
 export PATH="$HOME/.cargo/bin:$PATH"
 
 CID="CBVQQHNBJU3DAUUDL65VN7CGKYEETPMHW2HANPZJVGHYQMML56S6QC24"
+KEY="${KEY:-yellow-counter-admin}"
 
-PUB=$(stellar keys address ybcounter)
+if ! stellar keys address "$KEY" >/dev/null 2>&1; then
+  stellar keys generate "$KEY" --network testnet --fund >/dev/null 2>&1 || true
+fi
+stellar keys fund "$KEY" --network testnet >/dev/null 2>&1 || true
+PUB=$(stellar keys address "$KEY")
 echo "DEPLOYER=$PUB"
 
 echo "== invoke increment(by=5) =="
-RESULT=$(stellar contract invoke --id "$CID" --source-account ybcounter --network testnet -- increment --by 5)
+RESULT=$(stellar contract invoke --id "$CID" --source-account "$KEY" --network testnet -- increment --by 5)
 echo "RESULT=$RESULT"
 
 # The tx id/hash is the first 64-hex token in the account's latest tx record.

@@ -74,6 +74,13 @@ stellar contract deploy \
   --source-account me --network testnet
 ```
 
+Or use the portable helper scripts from the repo root:
+
+```bash
+bash scripts/wsl-deploy-counter.sh
+bash scripts/wsl-invoke-counter.sh
+```
+
 ## Security model
 
 This is a **demo on testnet**. The counter is intentionally **permissionless**: `increment` and `reset` do not call `require_auth`, so any account can change or zero the shared value. That is by design for a public shared counter. A production version would gate `reset` (and likely `increment`) behind `require_auth` and an owner/admin check. The release profile sets `overflow-checks = true`, so a `u32` overflow traps instead of wrapping.
@@ -91,6 +98,10 @@ The private key never leaves the wallet: the app builds an unsigned invocation, 
 ![Connect screen](screenshots/01-connect.png)
 
 > For the connected / counter / events views, run the app per Quick Start and connect a wallet on Testnet.
+
+## Submission checklist
+
+See [`SUBMISSION.md`](SUBMISSION.md) for the reviewer-facing summary, contract ID, on-chain proof, and run commands.
 
 ## License
 
